@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pet Line · Pedidos · Eventos</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1a4f8a;
+    --green-light: #e8f0fb;
+    --green-mid: #2e6fd4;
+    --amber: #c47c1a;
+    --amber-light: #fdf3e3;
+    --red: #c0392b;
+    --bg: #f5f7fb;
+    --card: #ffffff;
+    --border: #dce3f0;
+    --text: #1a2236;
+    --muted: #6b7a96;
+    --radius: 10px;
+    --shadow: 0 2px 12px rgba(26,79,138,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .app-header {
+    background: linear-gradient(135deg, #1a4f8a 0%, #1e3a6e 100%);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .app-header .logo {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px; color: #fff;
+  }
+  .app-header .logo svg { opacity: .9; }
+  .tab-nav { display: flex; gap: 4px; }
+  .tab-nav button {
+    background: rgba(255,255,255,0.12);
+    border: none; border-radius: 6px;
+    padding: 6px 14px; font-family: 'DM Sans', sans-serif;
+    font-size: 13px; color: rgba(255,255,255,0.8);
+    cursor: pointer; transition: all .2s;
+  }
+  .tab-nav button.active, .tab-nav button:hover {
+    background: rgba(255,255,255,0.22); color: #fff;
+  }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 740px; margin: 0 auto; padding: 28px 20px 60px; }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+  }
+  .card-title {
+    font-size: 11px; font-weight: 600; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--green);
+    margin-bottom: 14px; display: flex; align-items: center; gap: 6px;
+  }
+  .card-title::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  /* ── FIELDS ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label { font-size: 12px; font-weight: 500; color: var(--muted); }
+  .field label .req { color: var(--green-mid); margin-left: 2px; }
+  .field input, .field select, .field textarea {
+    padding: 9px 11px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; color: var(--text);
+    background: #fff;
+    transition: border-color .18s, box-shadow .18s;
+    width: 100%;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    outline: none; border-color: var(--green-mid);
+    box-shadow: 0 0 0 3px rgba(46,168,114,.12);
+  }
+  .field input.error, .field select.error, .field textarea.error {
+    border-color: var(--red);
+    box-shadow: 0 0 0 3px rgba(192,57,43,.10);
+  }
+  .field textarea { resize: vertical; min-height: 78px; line-height: 1.55; }
+  .field select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7a67' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 11px center; padding-right: 30px; }
+
+  /* ── TIPO TOGGLE ── */
+  .tipo-group { display: flex; gap: 8px; }
+  .tipo-btn {
+    flex: 1; padding: 9px; border: 1.5px solid var(--border);
+    border-radius: 8px; background: #fff;
+    font-family: 'DM Sans', sans-serif; font-size: 14px;
+    color: var(--muted); cursor: pointer; text-align: center;
+    transition: all .18s; display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .tipo-btn.active {
+    border-color: var(--green-mid); background: var(--green-light);
+    color: var(--green); font-weight: 500;
+  }
+
+  /* ── MATERIAIS CHECKLIST ── */
+  .mat-section { margin-bottom: 14px; }
+  .mat-section-title {
+    font-size: 12px; font-weight: 600; color: var(--muted);
+    margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+  }
+  .mat-section-title .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+  .dot-blue { background: #3b82f6; }
+  .dot-amber { background: var(--amber); }
+  .dot-green { background: var(--green-mid); }
+
+  .check-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 6px;
+  }
+  .check-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 10px; border: 1.5px solid var(--border);
+    border-radius: 7px; background: #fff; cursor: pointer;
+    transition: all .15s; user-select: none;
+  }
+  .check-item:hover { border-color: var(--green-mid); background: var(--green-light); }
+  .check-item.checked { border-color: var(--green-mid); background: var(--green-light); }
+  .check-item input[type=checkbox] { display: none; }
+  .check-box {
+    width: 16px; height: 16px; border: 1.5px solid var(--border);
+    border-radius: 4px; flex-shrink: 0; display: flex;
+    align-items: center; justify-content: center;
+    transition: all .15s; background: #fff;
+  }
+  .check-item.checked .check-box {
+    background: var(--green-mid); border-color: var(--green-mid);
+  }
+  .check-item.checked .check-box::after {
+    content: ''; width: 4px; height: 7px;
+    border: 1.5px solid #fff; border-top: none; border-left: none;
+    transform: rotate(45deg) translateY(-1px);
+  }
+  .check-label { font-size: 13px; color: var(--text); line-height: 1.3; }
+
+  /* ── QTD INPUT ── */
+  .qtd-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 10px; border: 1.5px solid var(--green-mid);
+    border-radius: 7px; background: var(--green-light);
+    margin-top: 4px;
+  }
+  .qtd-row label { font-size: 12px; color: var(--green); flex: 1; font-weight: 500; }
+  .qtd-row input {
+    width: 64px; padding: 4px 8px; border: 1px solid var(--border);
+    border-radius: 5px; font-size: 13px; text-align: center;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .qtd-row input:focus { outline: none; border-color: var(--green-mid); }
+
+  /* ── INFO BOX ── */
+  .info-box {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: var(--green-light); border: 1px solid #a0bce8;
+    border-radius: 8px; padding: 12px 14px; font-size: 13px;
+    color: var(--green); margin-bottom: 16px; line-height: 1.5;
+  }
+  .info-box svg { flex-shrink: 0; margin-top: 1px; }
+
+  /* ── BUTTON ── */
+  .btn-submit {
+    width: 100%; padding: 13px;
+    background: var(--green); border: none; border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
+    color: #fff; cursor: pointer; transition: background .2s, transform .1s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-submit:hover { background: #145f41; }
+  .btn-submit:active { transform: scale(.99); }
+
+  /* ── HISTÓRICO ── */
+  .hist-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px;
+  }
+  .hist-header h2 { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); }
+  .hist-filter { display: flex; gap: 8px; align-items: center; }
+  .hist-filter select {
+    padding: 7px 28px 7px 10px; border: 1.5px solid var(--border);
+    border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px;
+    color: var(--text); background: #fff;
+    appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7a67' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 9px center;
+  }
+  .btn-clear {
+    padding: 7px 12px; border: 1.5px solid #e8c5c3; border-radius: 8px;
+    background: #fdf4f3; color: var(--red); font-size: 12px; font-weight: 500;
+    font-family: 'DM Sans', sans-serif; cursor: pointer;
+  }
+  .hist-empty {
+    text-align: center; padding: 48px 20px; color: var(--muted); font-size: 14px;
+  }
+  .hist-empty svg { margin-bottom: 12px; opacity: .4; }
+  .pedido-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); margin-bottom: 10px;
+    overflow: hidden; box-shadow: var(--shadow);
+  }
+  .pedido-head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 16px; cursor: pointer; transition: background .15s;
+  }
+  .pedido-head:hover { background: #f7f8f6; }
+  .pedido-meta { display: flex; flex-direction: column; gap: 2px; }
+  .pedido-titulo { font-size: 14px; font-weight: 600; color: var(--text); }
+  .pedido-sub { font-size: 12px; color: var(--muted); }
+  .pedido-badges { display: flex; gap: 6px; align-items: center; }
+  .badge {
+    font-size: 11px; font-weight: 500; padding: 3px 8px;
+    border-radius: 999px;
+  }
+  .badge-evento { background: #e8f0fe; color: #2563eb; }
+  .badge-ativacao { background: var(--amber-light); color: var(--amber); }
+  .badge-data { background: var(--green-light); color: var(--green); }
+  .pedido-body { display: none; padding: 0 16px 14px; border-top: 1px solid var(--border); }
+  .pedido-body.open { display: block; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .detail-item label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .detail-item span { font-size: 13px; color: var(--text); }
+  .detail-full { margin-top: 10px; }
+  .detail-full label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); display: block; margin-bottom: 4px; }
+  .detail-full .mat-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+  .mat-tag { font-size: 12px; padding: 3px 8px; border-radius: 5px; background: var(--green-light); color: var(--green); }
+
+  /* ── SUCCESS ── */
+  .success-screen {
+    display: none; text-align: center; padding: 40px 20px;
+  }
+  .success-screen.show { display: block; }
+  .success-icon {
+    width: 64px; height: 64px; background: var(--green-light);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+  }
+  .success-screen h2 { font-family: 'DM Serif Display', serif; font-size: 24px; margin-bottom: 8px; }
+  .success-screen p { color: var(--muted); font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
+  .success-chips { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px; }
+  .success-chip {
+    display: flex; align-items: center; gap: 6px; padding: 8px 14px;
+    border: 1px solid var(--border); border-radius: 8px;
+    font-size: 13px; color: var(--muted); background: #fff;
+  }
+  .btn-novo {
+    padding: 11px 28px; background: var(--green); border: none; border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+    color: #fff; cursor: pointer;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (max-width: 560px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .check-grid { grid-template-columns: 1fr; }
+    .detail-grid { grid-template-columns: 1fr; }
+    .hist-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .app-header { flex-direction: column; height: auto; padding: 10px 16px; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+      <rect x="2" y="6" width="18" height="13" rx="2" stroke="#fff" stroke-width="1.4"/>
+      <path d="M7 6V5a4 4 0 0 1 8 0v1" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/>
+      <circle cx="11" cy="12.5" r="1.5" fill="#fff"/>
+    </svg>
+    Pet Line · Pedidos · Eventos
+  </div>
+  <div class="tab-nav">
+    <button class="active" onclick="showPage('form')">Nova Solicitação</button>
+    <button onclick="showPage('hist')">Histórico</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ══ FORMULÁRIO ══ -->
+  <div id="page-form" class="page active">
+
+    <div id="form-content">
+
+      <!-- Identificação -->
+      <div class="card">
+        <div class="card-title">Identificação do solicitante</div>
+        <div class="grid-2">
+          <div class="field">
+            <label>Nome do RCA <span class="req">*</span></label>
+            <select id="rca">
+              <option value="">Selecione...</option>
+              <optgroup label="RCAs">
+                <option>ALINE SALABERRY WILLEKER</option>
+                <option>ALÍCIA TIERSCHNABEL</option>
+                <option>ARIOVALDO SAPATA JUNIOR</option>
+                <option>DAIANE CRISTINA REBELO</option>
+                <option>ELIS FERNANDA ARCHER</option>
+                <option>ELIZETE MORAES LTDA</option>
+                <option>FLAVIA CARVALHO</option>
+                <option>FLÁVIA RÔMULO</option>
+                <option>ISABELA BELOTTO SANTOS</option>
+                <option>JOSÉ HUMBERTO BARROS</option>
+                <option>JULIANA FAGUNDES BRUING</option>
+                <option>LETICIA NUNES</option>
+                <option>MARIA EDUARDA PORASKI</option>
+                <option>MARILIA PEREIRA DOS SANTOS</option>
+                <option>RAFAEL DA ROSA KUSE</option>
+                <option>RAFAEL LAGO</option>
+                <option>VANESSA LAZZARIS</option>
+              </optgroup>
+              <optgroup label="Promotores">
+                <option>CAROLINA ILKIU CECCATTO</option>
+                <option>FLAVIA NESI LAVINA</option>
+                <option>HERMES VICENTE DA SILVA JUNIOR</option>
+                <option>JESSICA DE ANDRADE MARIANO</option>
+                <option>JOÃO LOURENÇO HASCKEL GEWEHR</option>
+                <option>KATIUSCIA ZIMMER KOTHE</option>
+                <option>LETICIA CORREA</option>
+                <option>MARIA EDUARDA ROCHA</option>
+                <option>MAYSA</option>
+                <option>NADINE ROBERTA WALKER</option>
+                <option>NATHALIA FRANCA DA ROSA</option>
+                <option>RAFAELA CARRELLI CHIAMULERA</option>
+              </optgroup>
+              <optgroup label="Coordenadores">
+                <option>ESTEFANE LUIZ DA SILVA</option>
+                <option>FELIPE MORAES</option>
+                <option>JANAINA JUNCKES</option>
+                <option>SULLIVAN AVILA DOS SANTOS SA</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="field">
+            <label>Laboratório / Linha <span class="req">*</span></label>
+            <select id="lab">
+              <option value="">Selecione...</option>
+              <option>AGENER</option>
+              <option>ALERE</option>
+              <option>EXCLUSIVO AGENER</option>
+              <option>PAUTA MISTA</option>
+              <option>PAUTA MISTA (EXCETO AGENER)</option>
+              <option>PET SOCIETY</option>
+              <option>SOFTCARE &amp; NUTRIPHARME</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dados do Evento -->
+      <div class="card">
+        <div class="card-title">Dados do evento / ativação</div>
+        <div class="field" style="margin-bottom:12px">
+          <label>Tipo <span class="req">*</span></label>
+          <div class="tipo-group">
+            <button class="tipo-btn active" data-val="Evento" type="button">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="3" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M4 1v2M10 1v2M1 6h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              Evento
+            </button>
+            <button class="tipo-btn" data-val="Ativação" type="button">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M7 4v3l2 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              Ativação
+            </button>
+          </div>
+          <input type="hidden" id="tipo" value="Evento">
+        </div>
+        <div class="grid-3" style="margin-bottom:12px">
+          <div class="field">
+            <label>Data <span class="req">*</span></label>
+            <input type="date" id="data">
+          </div>
+          <div class="field" style="grid-column:span 2">
+            <label>Cliente / Parceiro <span class="req">*</span></label>
+            <input type="text" id="cliente" placeholder="Nome do cliente ou parceiro">
+          </div>
+        </div>
+        <div class="field">
+          <label>Cidade / Local <span class="req">*</span></label>
+          <input type="text" id="cidade" placeholder="Ex: Joinville — SC">
+        </div>
+      </div>
+
+      <!-- Materiais PDV -->
+      <div class="card">
+        <div class="card-title">Materiais PDV / Merchandising</div>
+
+        <div class="mat-section">
+          <div class="mat-section-title">
+            <span class="dot dot-green"></span> Estruturas e Tendas
+          </div>
+          <div class="check-grid" id="check-estruturas">
+            <label class="check-item">
+              <input type="checkbox" value="Tenda Pet Line (Ferro)">
+              <span class="check-box"></span>
+              <span class="check-label">Tenda Pet Line (Ferro)</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Tenda Beeps">
+              <span class="check-box"></span>
+              <span class="check-label">Tenda Beeps</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Tenda Ectocid - Agener">
+              <span class="check-box"></span>
+              <span class="check-label">Tenda Ectocid - Agener</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Tenda Helfine - Agener">
+              <span class="check-box"></span>
+              <span class="check-label">Tenda Helfine - Agener</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Tenda de Ferro">
+              <span class="check-box"></span>
+              <span class="check-label">Tenda de Ferro</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Porta Banner">
+              <span class="check-box"></span>
+              <span class="check-label">Porta Banner</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Projetor / Data Show">
+              <span class="check-box"></span>
+              <span class="check-label">Projetor / Data Show</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="mat-section">
+          <div class="mat-section-title">
+            <span class="dot dot-amber"></span> Balcões e Expositores
+          </div>
+          <div class="check-grid">
+            <label class="check-item">
+              <input type="checkbox" value="Balcão Agener">
+              <span class="check-box"></span>
+              <span class="check-label">Balcão Agener</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Balcão Beeps">
+              <span class="check-box"></span>
+              <span class="check-label">Balcão Beeps</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Balcão Bioctal">
+              <span class="check-box"></span>
+              <span class="check-label">Balcão Bioctal</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Balcão Churu">
+              <span class="check-box"></span>
+              <span class="check-label">Balcão Churu</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Balcão Hello Kitty">
+              <span class="check-box"></span>
+              <span class="check-label">Balcão Hello Kitty</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Balcão Hydra">
+              <span class="check-box"></span>
+              <span class="check-label">Balcão Hydra</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Balcão Pet Delícia">
+              <span class="check-box"></span>
+              <span class="check-label">Balcão Pet Delícia</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Balcão Soft Care">
+              <span class="check-box"></span>
+              <span class="check-label">Balcão Soft Care</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Expositor Pet Delícia">
+              <span class="check-box"></span>
+              <span class="check-label">Expositor Pet Delícia</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Decoração Pet Delícia">
+              <span class="check-box"></span>
+              <span class="check-label">Decoração Pet Delícia</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="mat-section">
+          <div class="mat-section-title">
+            <span class="dot dot-blue"></span> Banners, Lonas e Gráficos
+          </div>
+          <div class="check-grid">
+            <label class="check-item">
+              <input type="checkbox" value="Banner Agener">
+              <span class="check-box"></span>
+              <span class="check-label">Banner Agener</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Banner Alere">
+              <span class="check-box"></span>
+              <span class="check-label">Banner Alere</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Banner Churu">
+              <span class="check-box"></span>
+              <span class="check-label">Banner Churu</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Banner Hydra">
+              <span class="check-box"></span>
+              <span class="check-label">Banner Hydra</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Banner Pet Delícia">
+              <span class="check-box"></span>
+              <span class="check-label">Banner Pet Delícia</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Banner Pet Line">
+              <span class="check-box"></span>
+              <span class="check-label">Banner Pet Line</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Back Drop Pet Line">
+              <span class="check-box"></span>
+              <span class="check-label">Back Drop Pet Line</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Lona Pet Line">
+              <span class="check-box"></span>
+              <span class="check-label">Lona Pet Line</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Lona Hydra">
+              <span class="check-box"></span>
+              <span class="check-label">Lona Hydra</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Lona Pet Line-Agener">
+              <span class="check-box"></span>
+              <span class="check-label">Lona Pet Line-Agener</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Gigantográfico Megamater">
+              <span class="check-box"></span>
+              <span class="check-label">Gigantográfico Megamater</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Gigantográfico Omega Top3">
+              <span class="check-box"></span>
+              <span class="check-label">Gigantográfico Omega Top3</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Herois do Helfine (PVC)">
+              <span class="check-box"></span>
+              <span class="check-label">Herois do Helfine (PVC)</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="mat-section">
+          <div class="mat-section-title">
+            <span class="dot" style="background:#a855f7"></span> Infláveis
+          </div>
+          <div class="check-grid">
+            <label class="check-item">
+              <input type="checkbox" value="Inflável Agener">
+              <span class="check-box"></span>
+              <span class="check-label">Inflável Agener</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Inflável Helfine">
+              <span class="check-box"></span>
+              <span class="check-label">Inflável Helfine</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Beepão-Inflável">
+              <span class="check-box"></span>
+              <span class="check-label">Beepão-Inflável</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Qtd dos selecionados -->
+        <div id="qtd-area" style="margin-top:12px; display:none;">
+          <div style="font-size:12px; font-weight:600; color:var(--green); margin-bottom:8px; text-transform:uppercase; letter-spacing:.06em;">Quantidade de cada item</div>
+          <div id="qtd-fields"></div>
+        </div>
+
+        <div class="field" style="margin-top:12px">
+          <label>Observações sobre PDV</label>
+          <textarea id="obs-pdv" placeholder="Detalhes adicionais sobre os materiais solicitados..."></textarea>
+        </div>
+      </div>
+
+      <!-- Amostras -->
+      <div class="card">
+        <div class="card-title">Amostras <span style="font-weight:300;text-transform:none;font-size:11px;color:var(--muted);letter-spacing:0"> — descreva produto e quantidade</span></div>
+        <div class="field">
+          <label>Relação de amostras necessárias <span class="req">*</span></label>
+          <textarea id="amostras" placeholder="Ex: Helfine Plus — 30 unidades caixa 2 comp&#10;Beeps Antipulgas — 20 unidades frasco 100ml&#10;(futuramente será uma lista suspensa)"></textarea>
+        </div>
+      </div>
+
+      <!-- Criativos Online -->
+      <div class="card">
+        <div class="card-title">Criativos Online</div>
+        <div class="field">
+          <label>Materiais digitais para divulgação</label>
+          <textarea id="criativos" placeholder="Ex: Post feed Instagram — 1&#10;Stories — 2&#10;Banner WhatsApp — 1&#10;Card e-mail — 1"></textarea>
+        </div>
+      </div>
+
+      <!-- Observações gerais -->
+      <div class="card">
+        <div class="card-title">Observações gerais</div>
+        <div class="field">
+          <textarea id="obs" placeholder="Qualquer informação adicional que o Marketing deva saber..."></textarea>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#1a7a55" stroke-width="1.3"/><path d="M8 5v4M8 10.5v.5" stroke="#1a7a55" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <span>Após enviar, a solicitação ficará salva no seu histórico. Se quiser, avise o Marketing pelo <strong>WhatsApp</strong> informando que uma nova solicitação foi registrada.</span>
+      </div>
+
+      <button class="btn-submit" type="button" id="btn-submit">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M9 4l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Enviar Solicitação
+      </button>
+
+    </div><!-- /form-content -->
+
+    <!-- SUCCESS -->
+    <div id="success-screen" class="success-screen">
+      <div class="success-icon">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" stroke="#1a4f8a" stroke-width="1.5"/><path d="M9 14.5l3.5 3.5 7-7" stroke="#1a4f8a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h2>Solicitação enviada!</h2>
+      <p>Sua solicitação foi registrada com sucesso.<br>O Marketing receberá a notificação pelos canais abaixo.</p>
+      <div class="success-chips">
+        <div class="success-chip">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="2.5" width="12" height="9" rx="1.5" stroke="#6b7a67" stroke-width="1.2"/><path d="M1 5.5l6 4 6-4" stroke="#6b7a67" stroke-width="1.2"/></svg>
+          E-mail de confirmação
+        </div>
+        <div class="success-chip">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 11C1.5 9.5 1 7.5 1 6.5a6 6 0 1 1 6 6c-1 0-2.5-.5-3.5-1z" stroke="#6b7a67" stroke-width="1.2"/></svg>
+          WhatsApp Marketing
+        </div>
+      </div>
+      <button class="btn-novo" type="button" onclick="resetForm()">Nova solicitação</button>
+    </div>
+
+  </div><!-- /page-form -->
+
+  <!-- ══ HISTÓRICO ══ -->
+  <div id="page-hist" class="page">
+    <div class="hist-header">
+      <h2>Histórico de Pedidos</h2>
+      <div class="hist-filter">
+        <select id="filter-rca" onchange="renderHistorico()">
+          <option value="">Todos os RCAs</option>
+          <option>ALINE SALABERRY WILLEKER</option>
+          <option>ALÍCIA TIERSCHNABEL</option>
+          <option>ARIOVALDO SAPATA JUNIOR</option>
+          <option>DAIANE CRISTINA REBELO</option>
+          <option>ELIS FERNANDA ARCHER</option>
+          <option>ELIZETE MORAES LTDA</option>
+          <option>FLAVIA CARVALHO</option>
+          <option>FLÁVIA RÔMULO</option>
+          <option>ISABELA BELOTTO SANTOS</option>
+          <option>JOSÉ HUMBERTO BARROS</option>
+          <option>JULIANA FAGUNDES BRUING</option>
+          <option>KATIUSCIA ZIMMER KOTHE</option>
+          <option>LETICIA CORREA</option>
+          <option>LETICIA NUNES</option>
+          <option>MARIA EDUARDA PORASKI</option>
+          <option>MARIA EDUARDA ROCHA</option>
+          <option>MARILIA PEREIRA DOS SANTOS</option>
+          <option>RAFAEL DA ROSA KUSE</option>
+          <option>RAFAEL LAGO</option>
+          <option>VANESSA LAZZARIS</option>
+        </select>
+        <button class="btn-clear" onclick="clearHistory()">Limpar tudo</button>
+      </div>
+    </div>
+    <div id="hist-list"></div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ── DATA ──────────────────────────────────────
+const STORAGE_KEY = 'petline_pedidos_v2';
+
+function getPedidos() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch { return []; }
+}
+function savePedidos(arr) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+}
+
+// ── NAVEGAÇÃO ─────────────────────────────────
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + p).classList.add('active');
+  document.querySelectorAll('.tab-nav button')[p === 'form' ? 0 : 1].classList.add('active');
+  if (p === 'hist') renderHistorico();
+}
+
+// ── TIPO TOGGLE ────────────────────────────────
+function setTipo(btn) {
+  document.querySelectorAll('.tipo-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tipo').value = btn.dataset.val;
+}
+
+// ── CHECKBOX + QTD ────────────────────────────
+function toggleCheck(label) {
+  const cb = label.querySelector('input[type=checkbox]');
+  cb.checked = !cb.checked;
+  label.classList.toggle('checked', cb.checked);
+  updateQtdArea();
+}
+
+function updateQtdArea() {
+  const checked = [...document.querySelectorAll('.check-item.checked input[type=checkbox]')];
+  const area = document.getElementById('qtd-area');
+  const fields = document.getElementById('qtd-fields');
+  if (!checked.length) { area.style.display = 'none'; return; }
+  area.style.display = 'block';
+  // keep existing values
+  const existing = {};
+  document.querySelectorAll('.qtd-row').forEach(r => {
+    const lbl = r.dataset.item;
+    existing[lbl] = r.querySelector('input').value;
+  });
+  fields.innerHTML = checked.map(cb => `
+    <div class="qtd-row" data-item="${cb.value}">
+      <label>${cb.value}</label>
+      <input type="number" min="1" placeholder="Qtd" value="${existing[cb.value] || ''}">
+    </div>
+  `).join('');
+}
+
+function getMateriaisSelecionados() {
+  const rows = document.querySelectorAll('.qtd-row');
+  const out = [];
+  rows.forEach(r => {
+    const qtd = r.querySelector('input').value;
+    out.push(r.dataset.item + (qtd ? ` (${qtd})` : ''));
+  });
+  return out;
+}
+
+// ── VALIDAÇÃO ─────────────────────────────────
+function validate() {
+  const fields = [
+    { id: 'rca', label: 'Nome do RCA' },
+    { id: 'lab', label: 'Laboratório' },
+    { id: 'data', label: 'Data' },
+    { id: 'cliente', label: 'Cliente' },
+    { id: 'cidade', label: 'Cidade' },
+    { id: 'amostras', label: 'Amostras' },
+  ];
+  let ok = true;
+  fields.forEach(f => {
+    const el = document.getElementById(f.id);
+    if (!el.value.trim()) {
+      el.classList.add('error');
+      el.addEventListener('change', () => el.classList.remove('error'), { once: true });
+      if (ok) el.focus();
+      ok = false;
+    }
+  });
+  return ok;
+}
+
+// ── SUBMIT ────────────────────────────────────
+async function submitForm() {
+  if (!validate()) return;
+
+  const btn = document.querySelector('.btn-submit');
+  btn.disabled = true;
+  btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="animation:spin 1s linear infinite"><circle cx="8" cy="8" r="6" stroke="rgba(255,255,255,0.3)" stroke-width="2"/><path d="M8 2a6 6 0 0 1 6 6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg> Enviando...`;
+
+  const materiais = getMateriaisSelecionados();
+  const pedido = {
+    id: Date.now(),
+    rca: document.getElementById('rca').value,
+    lab: document.getElementById('lab').value,
+    tipo: document.getElementById('tipo').value,
+    data: document.getElementById('data').value,
+    cliente: document.getElementById('cliente').value,
+    cidade: document.getElementById('cidade').value,
+    amostras: document.getElementById('amostras').value,
+    criativos: document.getElementById('criativos').value,
+    materiais: materiais,
+    obsPdv: document.getElementById('obs-pdv').value,
+    obs: document.getElementById('obs').value,
+    criadoEm: new Date().toISOString(),
+  };
+
+  const materiaisTexto = materiais.length ? materiais.join(' | ') : '—';
+  const emailBody = {
+    _subject: `[Pedido RCA] ${pedido.rca} — ${pedido.cliente} (${pedido.data})`,
+    RCA: pedido.rca,
+    'Laboratorio': pedido.lab,
+    'Tipo': pedido.tipo,
+    'Data': pedido.data,
+    'Cliente': pedido.cliente,
+    'Cidade': pedido.cidade,
+    'Materiais PDV Merchandising': materiaisTexto,
+    'Obs PDV': pedido.obsPdv || '—',
+    'Amostras': pedido.amostras || '—',
+    'Criativos Online': pedido.criativos || '—',
+    'Observacoes Gerais': pedido.obs || '—',
+    'Enviado em': new Date().toLocaleString('pt-BR'),
+  };
+
+  try {
+    const res = await fetch('https://formspree.io/f/xqenkbda', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(emailBody),
+    });
+    if (!res.ok) throw new Error('Erro no envio');
+  } catch (e) {
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M9 4l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Enviar Solicitação`;
+    alert('Erro ao enviar. Verifique sua conexão e tente novamente.');
+    return;
+  }
+
+  const pedidos = getPedidos();
+  pedidos.unshift(pedido);
+  savePedidos(pedidos);
+
+  btn.disabled = false;
+  btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M9 4l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Enviar Solicitação`;
+  document.getElementById('form-content').style.display = 'none';
+  document.getElementById('success-screen').classList.add('show');
+}
+
+function resetForm() {
+  document.getElementById('success-screen').classList.remove('show');
+  document.getElementById('form-content').style.display = 'block';
+  // reset fields
+  ['rca','lab','data','cliente','cidade','amostras','criativos','obs-pdv','obs'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('tipo').value = 'Evento';
+  document.querySelectorAll('.tipo-btn').forEach((b,i) => b.classList.toggle('active', i===0));
+  document.querySelectorAll('.check-item').forEach(el => {
+    el.classList.remove('checked');
+    el.querySelector('input').checked = false;
+  });
+  updateQtdArea();
+}
+
+// ── HISTÓRICO ─────────────────────────────────
+function fmtData(iso) {
+  if (!iso) return '—';
+  const [y,m,d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+function fmtTs(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+}
+
+function renderHistorico() {
+  const filter = document.getElementById('filter-rca').value;
+  let pedidos = getPedidos();
+  if (filter) pedidos = pedidos.filter(p => p.rca === filter);
+  const cont = document.getElementById('hist-list');
+  if (!pedidos.length) {
+    cont.innerHTML = `<div class="hist-empty">
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect x="5" y="10" width="30" height="25" rx="3" stroke="#6b7a67" stroke-width="1.5"/><path d="M13 8V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v2" stroke="#6b7a67" stroke-width="1.5"/><path d="M13 20h14M13 26h8" stroke="#6b7a67" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <div>Nenhuma solicitação encontrada.</div>
+    </div>`;
+    return;
+  }
+  cont.innerHTML = pedidos.map((p, i) => `
+    <div class="pedido-card">
+      <div class="pedido-head" onclick="togglePedido(${i})">
+        <div class="pedido-meta">
+          <div class="pedido-titulo">${p.cliente} — ${p.cidade}</div>
+          <div class="pedido-sub">${p.rca} · ${p.lab} · enviado ${fmtTs(p.criadoEm)}</div>
+        </div>
+        <div class="pedido-badges">
+          <span class="badge badge-data">${fmtData(p.data)}</span>
+          <span class="badge ${p.tipo === 'Evento' ? 'badge-evento' : 'badge-ativacao'}">${p.tipo}</span>
+        </div>
+      </div>
+      <div class="pedido-body" id="pb-${i}">
+        <div class="detail-grid">
+          <div class="detail-item"><label>RCA</label><br><span>${p.rca}</span></div>
+          <div class="detail-item"><label>Laboratório</label><br><span>${p.lab}</span></div>
+          <div class="detail-item"><label>Data</label><br><span>${fmtData(p.data)}</span></div>
+          <div class="detail-item"><label>Tipo</label><br><span>${p.tipo}</span></div>
+          <div class="detail-item"><label>Cliente</label><br><span>${p.cliente}</span></div>
+          <div class="detail-item"><label>Cidade</label><br><span>${p.cidade}</span></div>
+        </div>
+        ${p.materiais && p.materiais.length ? `
+        <div class="detail-full">
+          <label>Materiais PDV / Merchandising</label>
+          <div class="mat-tags">${p.materiais.map(m => `<span class="mat-tag">${m}</span>`).join('')}</div>
+        </div>` : ''}
+        ${p.amostras ? `<div class="detail-full"><label>Amostras</label><br><span style="font-size:13px;white-space:pre-line">${p.amostras}</span></div>` : ''}
+        ${p.criativos ? `<div class="detail-full"><label>Criativos Online</label><br><span style="font-size:13px;white-space:pre-line">${p.criativos}</span></div>` : ''}
+        ${p.obsPdv ? `<div class="detail-full"><label>Obs. PDV</label><br><span style="font-size:13px">${p.obsPdv}</span></div>` : ''}
+        ${p.obs ? `<div class="detail-full"><label>Observações Gerais</label><br><span style="font-size:13px">${p.obs}</span></div>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function togglePedido(i) {
+  const body = document.getElementById('pb-' + i);
+  body.classList.toggle('open');
+}
+
+function clearHistory() {
+  if (!confirm('Tem certeza que deseja apagar todo o histórico? Essa ação não pode ser desfeita.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  renderHistorico();
+}
+
+// ── INIT ─────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  renderHistorico();
+
+  // Tipo buttons
+  document.querySelectorAll('.tipo-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() { setTipo(this); });
+  });
+
+  // Checkboxes
+  document.querySelectorAll('.check-item').forEach(function(label) {
+    label.addEventListener('click', function(e) {
+      if (e.target.tagName === 'INPUT') return;
+      e.preventDefault();
+      toggleCheck(this);
+    });
+  });
+
+  // Submit
+  document.getElementById('btn-submit').addEventListener('click', submitForm);
+});
+</script>
+</body>
+</html>
