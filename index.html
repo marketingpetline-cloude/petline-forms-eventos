@@ -403,9 +403,46 @@
             <input type="text" id="cliente" placeholder="Nome do cliente ou parceiro">
           </div>
         </div>
+        <div class="grid-2" style="margin-bottom:12px">
+          <div class="field">
+            <label>Cidade / Local <span class="req">*</span></label>
+            <input type="text" id="cidade" placeholder="Ex: Joinville — SC">
+          </div>
+          <div class="field">
+            <label>Código do cliente <span class="req">*</span></label>
+            <input type="text" id="cod-cliente" placeholder="Ex: 001234">
+          </div>
+        </div>
+      </div>
+
+      <!-- Logística -->
+      <div class="card">
+        <div class="card-title">Logística de entrega</div>
+        <div class="field" style="margin-bottom:12px;">
+          <label>Tipo de endereço para entrega <span class="req">*</span></label>
+          <div class="tipo-group">
+            <button class="tipo-btn active" data-val="cliente" data-target="end-cliente" type="button" id="end-btn-cliente">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 12c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              Endereço do cliente
+            </button>
+            <button class="tipo-btn" data-val="malote" data-target="end-malote" type="button" id="end-btn-malote">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="4" width="12" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M4 4V3a3 3 0 0 1 6 0v1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              Endereço malote
+            </button>
+          </div>
+          <input type="hidden" id="tipo-endereco" value="cliente">
+        </div>
+        <div class="field" id="end-cliente" style="margin-bottom:12px;">
+          <label>Endereço do cliente <span class="req">*</span></label>
+          <input type="text" id="endereco-cliente" placeholder="Rua, número, bairro, cidade — CEP">
+        </div>
+        <div class="field" id="end-malote" style="display:none;margin-bottom:12px;">
+          <label>Endereço malote <span class="req">*</span></label>
+          <input type="text" id="endereco-malote" placeholder="Endereço do malote">
+        </div>
         <div class="field">
-          <label>Cidade / Local <span class="req">*</span></label>
-          <input type="text" id="cidade" placeholder="Ex: Joinville — SC">
+          <label>Data prevista de devolução <span class="req">*</span></label>
+          <input type="date" id="data-devolucao">
         </div>
       </div>
 
@@ -627,7 +664,7 @@
         <div class="card-title">Amostras <span style="font-weight:300;text-transform:none;font-size:11px;color:var(--muted);letter-spacing:0"> — descreva produto e quantidade</span></div>
         <div class="field">
           <label>Relação de amostras necessárias <span class="req">*</span></label>
-          <textarea id="amostras" placeholder="Ex: Helfine Plus — 30 unidades caixa 2 comp&#10;Beeps Antipulgas — 20 unidades frasco 100ml&#10;(futuramente será uma lista suspensa)"></textarea>
+          <textarea id="amostras" placeholder="Ex: Helfine Plus — 30 unidades caixa 2 comp&#10;Beeps Antipulgas — 20 unidades frasco 100ml"></textarea>
         </div>
       </div>
 
@@ -797,12 +834,17 @@ function getMateriaisSelecionados() {
 
 // ── VALIDAÇÃO ─────────────────────────────────
 function validate() {
+  const tipoEnd = document.getElementById('tipo-endereco').value;
+  const endField = tipoEnd === 'cliente' ? 'endereco-cliente' : 'endereco-malote';
   const fields = [
     { id: 'rca', label: 'Nome do RCA' },
     { id: 'lab', label: 'Laboratório' },
     { id: 'data', label: 'Data' },
     { id: 'cliente', label: 'Cliente' },
+    { id: 'cod-cliente', label: 'Código do cliente' },
     { id: 'cidade', label: 'Cidade' },
+    { id: endField, label: 'Endereço de entrega' },
+    { id: 'data-devolucao', label: 'Data prevista de devolução' },
     { id: 'amostras', label: 'Amostras' },
   ];
   let ok = true;
@@ -834,7 +876,11 @@ async function submitForm() {
     tipo: document.getElementById('tipo').value,
     data: document.getElementById('data').value,
     cliente: document.getElementById('cliente').value,
+    codCliente: document.getElementById('cod-cliente').value,
     cidade: document.getElementById('cidade').value,
+    tipoEndereco: document.getElementById('tipo-endereco').value,
+    enderecoEntrega: document.getElementById('tipo-endereco').value === 'cliente' ? document.getElementById('endereco-cliente').value : document.getElementById('endereco-malote').value,
+    dataDevolucao: document.getElementById('data-devolucao').value,
     amostras: document.getElementById('amostras').value,
     criativos: document.getElementById('criativos').value,
     materiais: materiais,
@@ -851,7 +897,11 @@ async function submitForm() {
     'Tipo': pedido.tipo,
     'Data': pedido.data,
     'Cliente': pedido.cliente,
+    'Codigo Cliente': pedido.codCliente || '—',
     'Cidade': pedido.cidade,
+    'Tipo Endereco Entrega': pedido.tipoEndereco === 'cliente' ? 'Endereço do cliente' : 'Endereço malote',
+    'Endereco Entrega': pedido.enderecoEntrega || '—',
+    'Data Devolucao': pedido.dataDevolucao || '—',
     'Materiais PDV Merchandising': materiaisTexto,
     'Obs PDV': pedido.obsPdv || '—',
     'Amostras': pedido.amostras || '—',
@@ -888,7 +938,7 @@ function resetForm() {
   document.getElementById('success-screen').classList.remove('show');
   document.getElementById('form-content').style.display = 'block';
   // reset fields
-  ['rca','lab','data','cliente','cidade','amostras','criativos','obs-pdv','obs'].forEach(id => {
+  ['rca','lab','data','cliente','cod-cliente','cidade','endereco-cliente','endereco-malote','data-devolucao','amostras','criativos','obs-pdv','obs'].forEach(id => {
     document.getElementById(id).value = '';
   });
   document.getElementById('tipo').value = 'Evento';
@@ -976,6 +1026,22 @@ document.addEventListener('DOMContentLoaded', function() {
   // Tipo buttons
   document.querySelectorAll('.tipo-btn').forEach(function(btn) {
     btn.addEventListener('click', function() { setTipo(this); });
+  });
+
+  // Endereço toggle
+  document.getElementById('end-btn-cliente').addEventListener('click', function() {
+    document.getElementById('end-btn-cliente').classList.add('active');
+    document.getElementById('end-btn-malote').classList.remove('active');
+    document.getElementById('tipo-endereco').value = 'cliente';
+    document.getElementById('end-cliente').style.display = '';
+    document.getElementById('end-malote').style.display = 'none';
+  });
+  document.getElementById('end-btn-malote').addEventListener('click', function() {
+    document.getElementById('end-btn-malote').classList.add('active');
+    document.getElementById('end-btn-cliente').classList.remove('active');
+    document.getElementById('tipo-endereco').value = 'malote';
+    document.getElementById('end-malote').style.display = '';
+    document.getElementById('end-cliente').style.display = 'none';
   });
 
   // Checkboxes
