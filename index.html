@@ -397,13 +397,21 @@
         </div>
         <div class="grid-3" style="margin-bottom:12px">
           <div class="field">
-            <label>Data <span class="req">*</span></label>
+            <label>Data do evento <span class="req">*</span></label>
             <input type="date" id="data">
           </div>
-          <div class="field" style="grid-column:span 2">
-            <label>Cliente / Parceiro <span class="req">*</span></label>
-            <input type="text" id="cliente" placeholder="Nome do cliente ou parceiro">
+          <div class="field">
+            <label>Data de envio <span class="req">*</span></label>
+            <input type="date" id="data-envio">
           </div>
+          <div class="field">
+            <label>Data de devolução <span class="req">*</span></label>
+            <input type="date" id="data-devolucao-mat">
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:12px">
+          <label>Cliente / Parceiro <span class="req">*</span></label>
+          <input type="text" id="cliente" placeholder="Nome do cliente ou parceiro">
         </div>
         <div class="grid-2" style="margin-bottom:12px">
           <div class="field">
@@ -510,11 +518,7 @@
               <span class="check-box"></span>
               <span class="check-label">Balcão Beeps</span>
             </label>
-            <label class="check-item">
-              <input type="checkbox" value="Balcão Bioctal">
-              <span class="check-box"></span>
-              <span class="check-label">Balcão Bioctal</span>
-            </label>
+
             <label class="check-item">
               <input type="checkbox" value="Balcão Churu">
               <span class="check-box"></span>
@@ -857,7 +861,9 @@ function validate() {
   const fields = [
     { id: 'rca', label: 'Nome do RCA' },
     { id: 'lab', label: 'Laboratório' },
-    { id: 'data', label: 'Data' },
+    { id: 'data', label: 'Data do evento' },
+    { id: 'data-envio', label: 'Data de envio' },
+    { id: 'data-devolucao-mat', label: 'Data de devolução dos materiais' },
     { id: 'cliente', label: 'Cliente' },
     { id: 'cod-cliente', label: 'Código do cliente' },
     { id: 'cidade', label: 'Cidade' },
@@ -893,6 +899,8 @@ async function submitForm() {
     lab: document.getElementById('lab').value,
     tipo: document.getElementById('tipo').value,
     data: document.getElementById('data').value,
+    dataEnvio: document.getElementById('data-envio').value,
+    dataDevolucaoMat: document.getElementById('data-devolucao-mat').value,
     cliente: document.getElementById('cliente').value,
     codCliente: document.getElementById('cod-cliente').value,
     cidade: document.getElementById('cidade').value,
@@ -913,7 +921,9 @@ async function submitForm() {
     RCA: pedido.rca,
     'Laboratorio': pedido.lab,
     'Tipo': pedido.tipo,
-    'Data': pedido.data,
+    'Data do Evento': pedido.data,
+    'Data de Envio': pedido.dataEnvio || '—',
+    'Data de Devolucao Materiais': pedido.dataDevolucaoMat || '—',
     'Cliente': pedido.cliente,
     'Codigo Cliente': pedido.codCliente || '—',
     'Cidade': pedido.cidade,
@@ -956,7 +966,7 @@ function resetForm() {
   document.getElementById('success-screen').classList.remove('show');
   document.getElementById('form-content').style.display = 'block';
   // reset fields
-  ['rca','lab','data','cliente','cod-cliente','cidade','endereco-cliente','endereco-malote','data-devolucao','amostras','criativos','obs-pdv','obs'].forEach(id => {
+  ['rca','lab','data','data-envio','data-devolucao-mat','cliente','cod-cliente','cidade','endereco-cliente','endereco-malote','data-devolucao','amostras','criativos','obs-pdv','obs'].forEach(id => {
     document.getElementById(id).value = '';
   });
   document.getElementById('tipo').value = 'Evento';
