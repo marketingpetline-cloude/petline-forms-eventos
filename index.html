@@ -395,7 +395,7 @@
           </div>
           <input type="hidden" id="tipo" value="Evento">
         </div>
-        <div class="grid-3" style="margin-bottom:12px">
+        <div class="grid-2" style="margin-bottom:12px">
           <div class="field">
             <label>Data do evento <span class="req">*</span></label>
             <input type="date" id="data">
@@ -403,10 +403,6 @@
           <div class="field">
             <label>Data de envio <span class="req">*</span></label>
             <input type="date" id="data-envio">
-          </div>
-          <div class="field">
-            <label>Data de devolução <span class="req">*</span></label>
-            <input type="date" id="data-devolucao-mat">
           </div>
         </div>
         <div class="field" style="margin-bottom:12px">
@@ -646,16 +642,6 @@
           </div>
           <div class="check-grid">
             <label class="check-item">
-              <input type="checkbox" value="Inflável Agener">
-              <span class="check-box"></span>
-              <span class="check-label">Inflável Agener</span>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" value="Inflável Helfine">
-              <span class="check-box"></span>
-              <span class="check-label">Inflável Helfine</span>
-            </label>
-            <label class="check-item">
               <input type="checkbox" value="Beepão-Inflável">
               <span class="check-box"></span>
               <span class="check-label">Beepão-Inflável</span>
@@ -675,12 +661,21 @@
         </div>
       </div>
 
-      <!-- Amostras -->
+      <!-- Amostras Grátis -->
       <div class="card">
-        <div class="card-title">Amostras <span style="font-weight:300;text-transform:none;font-size:11px;color:var(--muted);letter-spacing:0"> — descreva produto e quantidade</span></div>
+        <div class="card-title">Amostras Grátis <span style="font-weight:300;text-transform:none;font-size:11px;color:var(--muted);letter-spacing:0"> — sacolas / camisetas / canetas / brindes</span></div>
         <div class="field">
-          <label>Relação de amostras necessárias <span class="req">*</span></label>
-          <textarea id="amostras" placeholder="Ex: Helfine Plus — 30 unidades caixa 2 comp&#10;Beeps Antipulgas — 20 unidades frasco 100ml"></textarea>
+          <label>Relação de amostras grátis <span class="req">*</span></label>
+          <textarea id="amostras" placeholder="Ex: 30 - Shampoo Beeps; 30 - Condicionador Beeps; 50 - PropCalm Sampoo; 50 Canetas&#10;OBS: Não pode ser medicamentos"></textarea>
+        </div>
+      </div>
+
+      <!-- Amostras Autorizadas -->
+      <div class="card">
+        <div class="card-title">Amostras Autorizadas <span style="font-weight:300;text-transform:none;font-size:11px;color:var(--muted);letter-spacing:0"> — produtos</span></div>
+        <div class="field">
+          <label>Relação de amostras autorizadas</label>
+          <textarea id="amostras-autorizadas" placeholder="Ex: 50 - Churu gatos; 50 - Churu dog; 10 Copos Ectocid; 10 Hep SAMe"></textarea>
         </div>
       </div>
 
@@ -873,7 +868,6 @@ function validate() {
     { id: 'lab', label: 'Laboratório' },
     { id: 'data', label: 'Data do evento' },
     { id: 'data-envio', label: 'Data de envio' },
-    { id: 'data-devolucao-mat', label: 'Data de devolução dos materiais' },
     { id: 'cliente', label: 'Cliente' },
     { id: 'cod-cliente', label: 'Código do cliente' },
     { id: 'cidade', label: 'Cidade' },
@@ -918,6 +912,7 @@ async function submitForm() {
     enderecoEntrega: document.getElementById('tipo-endereco').value === 'cliente' ? document.getElementById('endereco-cliente').value : document.getElementById('endereco-malote').value,
     dataDevolucao: document.getElementById('data-devolucao').value,
     amostras: document.getElementById('amostras').value,
+    amostrasAutorizadas: document.getElementById('amostras-autorizadas').value,
     criativos: document.getElementById('criativos').value,
     materiais: materiais,
     obsPdv: document.getElementById('obs-pdv').value,
@@ -942,7 +937,8 @@ async function submitForm() {
     'Data Devolucao': pedido.dataDevolucao || '—',
     'Materiais PDV Merchandising': materiaisTexto,
     'Obs PDV': pedido.obsPdv || '—',
-    'Amostras': pedido.amostras || '—',
+    'Amostras Gratis': pedido.amostras || '—',
+    'Amostras Autorizadas Produtos': pedido.amostrasAutorizadas || '—',
     'Criativos Online': pedido.criativos || '—',
     'Observacoes Gerais': pedido.obs || '—',
     'Enviado em': new Date().toLocaleString('pt-BR'),
@@ -976,7 +972,7 @@ function resetForm() {
   document.getElementById('success-screen').classList.remove('show');
   document.getElementById('form-content').style.display = 'block';
   // reset fields
-  ['rca','lab','data','data-envio','data-devolucao-mat','cliente','cod-cliente','cidade','endereco-cliente','endereco-malote','data-devolucao','amostras','criativos','obs-pdv','obs'].forEach(id => {
+  ['rca','lab','data','data-envio','cliente','cod-cliente','cidade','endereco-cliente','endereco-malote','data-devolucao','amostras','amostras-autorizadas','criativos','obs-pdv','obs'].forEach(id => {
     document.getElementById(id).value = '';
   });
   document.getElementById('tipo').value = 'Evento';
