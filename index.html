@@ -395,6 +395,10 @@
           </div>
           <input type="hidden" id="tipo" value="Evento">
         </div>
+        <div class="field" style="margin-bottom:12px">
+          <label>Tema</label>
+          <input type="text" id="tema" placeholder="Ex: Dia-D Vacinação, Pet Festival, Feira...">
+        </div>
         <div class="grid-2" style="margin-bottom:12px">
           <div class="field">
             <label>Data do evento <span class="req">*</span></label>
@@ -902,6 +906,7 @@ async function submitForm() {
     rca: document.getElementById('rca').value,
     lab: document.getElementById('lab').value,
     tipo: document.getElementById('tipo').value,
+    tema: document.getElementById('tema').value,
     data: document.getElementById('data').value,
     dataEnvio: document.getElementById('data-envio').value,
     dataDevolucaoMat: document.getElementById('data-devolucao-mat').value,
@@ -926,6 +931,7 @@ async function submitForm() {
     RCA: pedido.rca,
     'Laboratorio': pedido.lab,
     'Tipo': pedido.tipo,
+    'Tema': pedido.tema || '—',
     'Data do Evento': pedido.data,
     'Data de Envio': pedido.dataEnvio || '—',
     'Data de Devolucao Materiais': pedido.dataDevolucaoMat || '—',
@@ -972,7 +978,7 @@ function resetForm() {
   document.getElementById('success-screen').classList.remove('show');
   document.getElementById('form-content').style.display = 'block';
   // reset fields
-  ['rca','lab','data','data-envio','cliente','cod-cliente','cidade','endereco-cliente','endereco-malote','data-devolucao','amostras','amostras-autorizadas','criativos','obs-pdv','obs'].forEach(id => {
+  ['rca','lab','data','data-envio','tema','cliente','cod-cliente','cidade','endereco-cliente','endereco-malote','data-devolucao','amostras','amostras-autorizadas','criativos','obs-pdv','obs'].forEach(id => {
     document.getElementById(id).value = '';
   });
   document.getElementById('tipo').value = 'Evento';
