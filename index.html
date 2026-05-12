@@ -891,7 +891,6 @@ function validate() {
     { id: 'cod-cliente', label: 'Código do cliente' },
     { id: 'cidade', label: 'Cidade' },
     { id: endField, label: 'Endereço de entrega' },
-    { id: 'data-devolucao', label: 'Data prevista de devolução' },
     { id: 'amostras', label: 'Amostras' },
   ];
   let ok = true;
@@ -924,13 +923,11 @@ async function submitForm() {
     tema: document.getElementById('tema').value,
     data: document.getElementById('data').value,
     dataEnvio: document.getElementById('data-envio').value,
-    dataDevolucaoMat: document.getElementById('data-devolucao-mat').value,
     cliente: document.getElementById('cliente').value,
     codCliente: document.getElementById('cod-cliente').value,
     cidade: document.getElementById('cidade').value,
     tipoEndereco: document.getElementById('tipo-endereco').value,
     enderecoEntrega: document.getElementById('tipo-endereco').value === 'cliente' ? document.getElementById('endereco-cliente').value : document.getElementById('endereco-malote').value,
-    dataDevolucao: document.getElementById('data-devolucao').value,
     amostras: document.getElementById('amostras').value,
     amostrasAutorizadas: document.getElementById('amostras-autorizadas').value,
     criativos: document.getElementById('criativos').value,
@@ -949,13 +946,11 @@ async function submitForm() {
     'Tema': pedido.tema || '—',
     'Data do Evento': pedido.data,
     'Data de Envio': pedido.dataEnvio || '—',
-    'Data de Devolucao Materiais': pedido.dataDevolucaoMat || '—',
     'Cliente': pedido.cliente,
     'Codigo Cliente': pedido.codCliente || '—',
     'Cidade': pedido.cidade,
     'Tipo Endereco Entrega': pedido.tipoEndereco === 'cliente' ? 'Endereço do cliente' : 'Endereço malote',
     'Endereco Entrega': pedido.enderecoEntrega || '—',
-    'Data Devolucao': pedido.dataDevolucao || '—',
     'Materiais PDV Merchandising': materiaisTexto,
     'Obs PDV': pedido.obsPdv || '—',
     'Amostras Gratis': pedido.amostras || '—',
@@ -993,7 +988,7 @@ function resetForm() {
   document.getElementById('success-screen').classList.remove('show');
   document.getElementById('form-content').style.display = 'block';
   // reset fields
-  ['rca','lab','data','data-envio','tema','cliente','cod-cliente','cidade','endereco-cliente','endereco-malote','data-devolucao','amostras','amostras-autorizadas','criativos','obs-pdv','obs'].forEach(id => {
+  ['rca','lab','data','data-envio','tema','cliente','cod-cliente','cidade','endereco-cliente','endereco-malote','amostras','amostras-autorizadas','criativos','obs-pdv','obs'].forEach(id => {
     document.getElementById(id).value = '';
   });
   document.getElementById('tipo').value = 'Evento';
