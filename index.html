@@ -443,12 +443,14 @@
           <input type="hidden" id="tipo-endereco" value="cliente">
         </div>
         <div class="field" id="end-cliente" style="margin-bottom:12px;">
-          <label>Endereço do cliente <span class="req">*</span></label>
+          <label>Endereço do cliente / local do evento <span class="req">*</span></label>
           <input type="text" id="endereco-cliente" placeholder="Rua, número, bairro, cidade — CEP">
         </div>
         <div class="field" id="end-malote" style="display:none;margin-bottom:12px;">
-          <label>Endereço malote <span class="req">*</span></label>
-          <input type="text" id="endereco-malote" placeholder="Endereço do malote">
+          <div style="padding:10px 14px;background:var(--green-light);border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--green);">
+            📦 O endereço de malote já está cadastrado internamente para cada RCA. Nenhuma informação adicional necessária.
+          </div>
+          <input type="hidden" id="endereco-malote" value="Endereço de malote cadastrado internamente">
         </div>
         <div class="field">
           <label>Data prevista de devolução <span class="req">*</span></label>
@@ -456,19 +458,17 @@
         </div>
       </div>
 
-      <!-- Materiais PDV -->
+            <!-- Materiais PDV -->
       <div class="card">
         <div class="card-title">Materiais PDV / Merchandising</div>
 
         <div class="mat-section">
-          <div class="mat-section-title">
-            <span class="dot dot-green"></span> Estruturas e Tendas
-          </div>
-          <div class="check-grid" id="check-estruturas">
+          <div class="mat-section-title"><span class="dot dot-green"></span> Tendas</div>
+          <div class="check-grid">
             <label class="check-item">
-              <input type="checkbox" value="Tenda Pet Line (Ferro)">
+              <input type="checkbox" value="Tenda Agener (Vermelha)">
               <span class="check-box"></span>
-              <span class="check-label">Tenda Pet Line (Ferro)</span>
+              <span class="check-label">Tenda Agener (Vermelha)</span>
             </label>
             <label class="check-item">
               <input type="checkbox" value="Tenda Beeps">
@@ -476,29 +476,177 @@
               <span class="check-label">Tenda Beeps</span>
             </label>
             <label class="check-item">
-              <input type="checkbox" value="Tenda Ectocid - Agener (Amarela)">
-              <span class="check-box"></span>
-              <span class="check-label">Tenda Ectocid - Agener (Amarela)</span>
-            </label>
-            <label class="check-item">
               <input type="checkbox" value="Tenda Helfine - Agener (Azul)">
               <span class="check-box"></span>
               <span class="check-label">Tenda Helfine - Agener (Azul)</span>
             </label>
             <label class="check-item">
-              <input type="checkbox" value="Tenda Agener (Vermelha)">
+              <input type="checkbox" value="Tenda Pet Line (Ferro)">
               <span class="check-box"></span>
-              <span class="check-label">Tenda Agener (Vermelha)</span>
+              <span class="check-label">Tenda Pet Line (Ferro)</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Tenda Ectocid - Agener (Amarela)">
+              <span class="check-box"></span>
+              <span class="check-label">Tenda Ectocid - Agener (Amarela)</span>
             </label>
             <label class="check-item">
               <input type="checkbox" value="Tenda de Ferro">
               <span class="check-box"></span>
               <span class="check-label">Tenda de Ferro</span>
             </label>
+          </div>
+        </div>
+
+        <div class="mat-section">
+          <div class="mat-section-title"><span class="dot dot-amber"></span> Balcões</div>
+          <div class="check-grid">
+            <label class="check-item">
+              <input type="checkbox" value="Balcão Helfine Agener">
+              <span class="check-box"></span>
+              <span class="check-label">Balcão Helfine Agener</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Balcão Beeps">
+              <span class="check-box"></span>
+              <span class="check-label">Balcão Beeps</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Balcão Hydra">
+              <span class="check-box"></span>
+              <span class="check-label">Balcão Hydra</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Balcão Hello Kitty">
+              <span class="check-box"></span>
+              <span class="check-label">Balcão Hello Kitty</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Balcão Soft Care">
+              <span class="check-box"></span>
+              <span class="check-label">Balcão Soft Care</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Balcão Pet Delícia">
+              <span class="check-box"></span>
+              <span class="check-label">Balcão Pet Delícia</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Balcão Churu Dog">
+              <span class="check-box"></span>
+              <span class="check-label">Balcão Churu Dog</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Balcão Churu Cat">
+              <span class="check-box"></span>
+              <span class="check-label">Balcão Churu Cat</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Balcão Churu">
+              <span class="check-box"></span>
+              <span class="check-label">Balcão Churu</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Balcão Pet Line - Genérico">
+              <span class="check-box"></span>
+              <span class="check-label">Balcão Pet Line - Genérico</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="mat-section">
+          <div class="mat-section-title"><span class="dot dot-blue"></span> Banners e Roll-ups</div>
+          <div class="check-grid">
+            <label class="check-item">
+              <input type="checkbox" value="Banner Agener">
+              <span class="check-box"></span>
+              <span class="check-label">Banner Agener</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Banner Agener - Encontro">
+              <span class="check-box"></span>
+              <span class="check-label">Banner Agener - Encontro</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Banner Soft Care-Nutri">
+              <span class="check-box"></span>
+              <span class="check-label">Banner Soft Care-Nutri</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Banner Soft Care">
+              <span class="check-box"></span>
+              <span class="check-label">Banner Soft Care</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Banner Nutripharme">
+              <span class="check-box"></span>
+              <span class="check-label">Banner Nutripharme</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Banner Hydra">
+              <span class="check-box"></span>
+              <span class="check-label">Banner Hydra</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Banner Pet Line">
+              <span class="check-box"></span>
+              <span class="check-label">Banner Pet Line</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Banner Dia-D Vacinação - Agener">
+              <span class="check-box"></span>
+              <span class="check-label">Banner Dia-D Vacinação - Agener</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Banner Omega Top3 - Agener">
+              <span class="check-box"></span>
+              <span class="check-label">Banner Omega Top3 - Agener</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Roll-up Agener">
+              <span class="check-box"></span>
+              <span class="check-label">Roll-up Agener</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Roll-up Allere">
+              <span class="check-box"></span>
+              <span class="check-label">Roll-up Allere</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="mat-section">
+          <div class="mat-section-title"><span class="dot" style="background:#a855f7"></span> Lonas e Backdrops</div>
+          <div class="check-grid">
+            <label class="check-item">
+              <input type="checkbox" value="Lona Pet Line">
+              <span class="check-box"></span>
+              <span class="check-label">Lona Pet Line</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Lona Pet Line & Agener">
+              <span class="check-box"></span>
+              <span class="check-label">Lona Pet Line & Agener</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Lona Hydra">
+              <span class="check-box"></span>
+              <span class="check-label">Lona Hydra</span>
+            </label>
             <label class="check-item">
               <input type="checkbox" value="Porta Banner">
               <span class="check-box"></span>
               <span class="check-label">Porta Banner</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Heróis Helfine (PVC) - Agener">
+              <span class="check-box"></span>
+              <span class="check-label">Heróis Helfine (PVC) - Agener</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Back Drop">
+              <span class="check-box"></span>
+              <span class="check-label">Back Drop</span>
             </label>
             <label class="check-item">
               <input type="checkbox" value="Backdrop + Pet Line">
@@ -515,54 +663,42 @@
               <span class="check-box"></span>
               <span class="check-label">Backdrop + Agener</span>
             </label>
+          </div>
+        </div>
+
+        <div class="mat-section">
+          <div class="mat-section-title"><span class="dot" style="background:#e55"></span> Gigantografias</div>
+          <div class="check-grid">
             <label class="check-item">
-              <input type="checkbox" value="Projetor / Data Show">
+              <input type="checkbox" value="Megamater - Agener">
               <span class="check-box"></span>
-              <span class="check-label">Projetor / Data Show</span>
+              <span class="check-label">Megamater - Agener</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Helfine">
+              <span class="check-box"></span>
+              <span class="check-label">Helfine</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" value="Omega Top3 - Agener">
+              <span class="check-box"></span>
+              <span class="check-label">Omega Top3 - Agener</span>
             </label>
           </div>
         </div>
 
         <div class="mat-section">
-          <div class="mat-section-title">
-            <span class="dot dot-amber"></span> Balcões e Expositores
-          </div>
+          <div class="mat-section-title"><span class="dot" style="background:#0ea5e9"></span> Equipamentos e Display</div>
           <div class="check-grid">
             <label class="check-item">
-              <input type="checkbox" value="Balcão Agener">
+              <input type="checkbox" value="Projetor / Data Show">
               <span class="check-box"></span>
-              <span class="check-label">Balcão Agener</span>
+              <span class="check-label">Projetor / Data Show</span>
             </label>
             <label class="check-item">
-              <input type="checkbox" value="Balcão Beeps">
+              <input type="checkbox" value="Decoração Pet Delícia">
               <span class="check-box"></span>
-              <span class="check-label">Balcão Beeps</span>
-            </label>
-
-            <label class="check-item">
-              <input type="checkbox" value="Balcão Churu">
-              <span class="check-box"></span>
-              <span class="check-label">Balcão Churu</span>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" value="Balcão Hello Kitty">
-              <span class="check-box"></span>
-              <span class="check-label">Balcão Hello Kitty</span>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" value="Balcão Hydra">
-              <span class="check-box"></span>
-              <span class="check-label">Balcão Hydra</span>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" value="Balcão Pet Delícia">
-              <span class="check-box"></span>
-              <span class="check-label">Balcão Pet Delícia</span>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" value="Balcão Soft Care">
-              <span class="check-box"></span>
-              <span class="check-label">Balcão Soft Care</span>
+              <span class="check-label">Decoração Pet Delícia</span>
             </label>
             <label class="check-item">
               <input type="checkbox" value="Expositor Pet Delícia">
@@ -570,95 +706,15 @@
               <span class="check-label">Expositor Pet Delícia</span>
             </label>
             <label class="check-item">
-              <input type="checkbox" value="Decoração Pet Delícia">
+              <input type="checkbox" value="Jogo de Memória Helfine">
               <span class="check-box"></span>
-              <span class="check-label">Decoração Pet Delícia</span>
+              <span class="check-label">Jogo de Memória Helfine</span>
             </label>
           </div>
         </div>
 
         <div class="mat-section">
-          <div class="mat-section-title">
-            <span class="dot dot-blue"></span> Banners, Lonas e Gráficos
-          </div>
-          <div class="check-grid">
-            <label class="check-item">
-              <input type="checkbox" value="Banner Agener">
-              <span class="check-box"></span>
-              <span class="check-label">Banner Agener</span>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" value="Banner Dia-D Vacinação">
-              <span class="check-box"></span>
-              <span class="check-label">Banner Dia-D Vacinação</span>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" value="Banner Alere">
-              <span class="check-box"></span>
-              <span class="check-label">Banner Alere</span>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" value="Banner Churu">
-              <span class="check-box"></span>
-              <span class="check-label">Banner Churu</span>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" value="Banner Hydra">
-              <span class="check-box"></span>
-              <span class="check-label">Banner Hydra</span>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" value="Banner Pet Delícia">
-              <span class="check-box"></span>
-              <span class="check-label">Banner Pet Delícia</span>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" value="Banner Pet Line">
-              <span class="check-box"></span>
-              <span class="check-label">Banner Pet Line</span>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" value="Back Drop Pet Line">
-              <span class="check-box"></span>
-              <span class="check-label">Back Drop Pet Line</span>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" value="Lona Pet Line">
-              <span class="check-box"></span>
-              <span class="check-label">Lona Pet Line</span>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" value="Lona Hydra">
-              <span class="check-box"></span>
-              <span class="check-label">Lona Hydra</span>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" value="Lona Pet Line-Agener">
-              <span class="check-box"></span>
-              <span class="check-label">Lona Pet Line-Agener</span>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" value="Gigantográfico Megamater">
-              <span class="check-box"></span>
-              <span class="check-label">Gigantográfico Megamater</span>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" value="Gigantográfico Omega Top3">
-              <span class="check-box"></span>
-              <span class="check-label">Gigantográfico Omega Top3</span>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" value="Herois do Helfine (PVC)">
-              <span class="check-box"></span>
-              <span class="check-label">Herois do Helfine (PVC)</span>
-            </label>
-          </div>
-        </div>
-
-        <div class="mat-section">
-          <div class="mat-section-title">
-            <span class="dot" style="background:#a855f7"></span> Infláveis
-          </div>
+          <div class="mat-section-title"><span class="dot" style="background:#a855f7"></span> Infláveis</div>
           <div class="check-grid">
             <label class="check-item">
               <input type="checkbox" value="Beepão-Inflável">
@@ -881,7 +937,7 @@ function getMateriaisSelecionados() {
 // ── VALIDAÇÃO ─────────────────────────────────
 function validate() {
   const tipoEnd = document.getElementById('tipo-endereco').value;
-  const endField = tipoEnd === 'cliente' ? 'endereco-cliente' : 'endereco-malote';
+  const endField = tipoEnd === 'cliente' ? 'endereco-cliente' : null;
   const fields = [
     { id: 'rca', label: 'Nome do RCA' },
     { id: 'lab', label: 'Laboratório' },
@@ -890,7 +946,7 @@ function validate() {
     { id: 'cliente', label: 'Cliente' },
     { id: 'cod-cliente', label: 'Código do cliente' },
     { id: 'cidade', label: 'Cidade' },
-    { id: endField, label: 'Endereço de entrega' },
+    ...(tipoEnd === 'cliente' ? [{ id: 'endereco-cliente', label: 'Endereço do cliente / local do evento' }] : []),
     { id: 'amostras', label: 'Amostras' },
   ];
   let ok = true;
