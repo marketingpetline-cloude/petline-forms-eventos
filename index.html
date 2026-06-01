@@ -801,7 +801,8 @@
         <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" stroke="#1a4f8a" stroke-width="1.5"/><path d="M9 14.5l3.5 3.5 7-7" stroke="#1a4f8a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
       <h2>Solicitação enviada!</h2>
-      <p>Sua solicitação foi registrada com sucesso.<br>O Marketing receberá a notificação pelos canais abaixo.</p>
+      <div id="success-protocolo" style="display:inline-block;margin:8px 0 4px;padding:6px 18px;background:var(--green-light);border:1px solid var(--border);border-radius:8px;font-size:14px;font-weight:600;color:var(--green);letter-spacing:.04em;"></div>
+      <p style="margin-top:8px">Sua solicitação foi registrada com sucesso.<br>O Marketing receberá a notificação pelos canais abaixo.</p>
       <div class="success-chips">
         <div class="success-chip">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="2.5" width="12" height="9" rx="1.5" stroke="#6b7a67" stroke-width="1.2"/><path d="M1 5.5l6 4 6-4" stroke="#6b7a67" stroke-width="1.2"/></svg>
@@ -963,6 +964,25 @@ function validate() {
   return ok;
 }
 
+// ── PROTOCOLO ────────────────────────────────
+function gerarProtocolo() {
+  const base = 323;
+  const key = 'pl_protocolo_base';
+  let stored = localStorage.getItem(key);
+  // Use date+time for uniqueness: PL-323-YYYYMMDD-HHmm-XX
+  const now = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  const datePart = now.getFullYear().toString() +
+    pad(now.getMonth() + 1) +
+    pad(now.getDate());
+  const timePart = pad(now.getHours()) + pad(now.getMinutes());
+  // Sequential suffix per device per day
+  const seqKey = 'pl_seq_' + datePart;
+  let seq = parseInt(localStorage.getItem(seqKey) || '0') + 1;
+  localStorage.setItem(seqKey, seq);
+  return 'PL-' + (base + seq - 1) + '-' + datePart + '-' + timePart;
+}
+
 // ── SUBMIT ────────────────────────────────────
 async function submitForm() {
   if (!validate()) return;
@@ -971,9 +991,11 @@ async function submitForm() {
   btn.disabled = true;
   btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="animation:spin 1s linear infinite"><circle cx="8" cy="8" r="6" stroke="rgba(255,255,255,0.3)" stroke-width="2"/><path d="M8 2a6 6 0 0 1 6 6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg> Enviando...`;
 
+  const protocolo = gerarProtocolo();
   const materiais = getMateriaisSelecionados();
   const pedido = {
     id: Date.now(),
+    protocolo: protocolo,
     rca: document.getElementById('rca').value,
     lab: document.getElementById('lab').value,
     tipo: document.getElementById('tipo').value,
@@ -996,7 +1018,8 @@ async function submitForm() {
 
   const materiaisTexto = materiais.length ? materiais.join(' | ') : '—';
   const emailBody = {
-    _subject: `[Pedido RCA] ${pedido.rca} — ${pedido.cliente} (${pedido.data})`,
+    _subject: `[Protocolo ${protocolo}] Pedido RCA — ${pedido.rca} | ${pedido.cliente} (${pedido.data})`,
+    'Protocolo': protocolo,
     RCA: pedido.rca,
     'Laboratorio': pedido.lab,
     'Tipo': pedido.tipo,
@@ -1037,6 +1060,7 @@ async function submitForm() {
 
   btn.disabled = false;
   btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M9 4l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Enviar Solicitação`;
+  document.getElementById('success-protocolo').textContent = '📋 ' + protocolo;
   document.getElementById('form-content').style.display = 'none';
   document.getElementById('success-screen').classList.add('show');
 }
@@ -1084,7 +1108,7 @@ function renderHistorico() {
     <div class="pedido-card">
       <div class="pedido-head" onclick="togglePedido(${i})">
         <div class="pedido-meta">
-          <div class="pedido-titulo">${p.cliente} — ${p.cidade}</div>
+          <div class="pedido-titulo">${p.protocolo ? "[" + p.protocolo + "] " : ""}${p.cliente} — ${p.cidade}</div>
           <div class="pedido-sub">${p.rca} · ${p.lab} · enviado ${fmtTs(p.criadoEm)}</div>
         </div>
         <div class="pedido-badges">
