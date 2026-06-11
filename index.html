@@ -965,22 +965,19 @@ function validate() {
 }
 
 // ── PROTOCOLO ────────────────────────────────
-function gerarProtocolo() {
-  const base = 323;
-  const key = 'pl_protocolo_base';
-  let stored = localStorage.getItem(key);
-  // Use date+time for uniqueness: PL-323-YYYYMMDD-HHmm-XX
-  const now = new Date();
-  const pad = n => String(n).padStart(2, '0');
-  const datePart = now.getFullYear().toString() +
-    pad(now.getMonth() + 1) +
-    pad(now.getDate());
-  const timePart = pad(now.getHours()) + pad(now.getMinutes());
-  // Sequential suffix per device per day
-  const seqKey = 'pl_seq_' + datePart;
-  let seq = parseInt(localStorage.getItem(seqKey) || '0') + 1;
-  localStorage.setItem(seqKey, seq);
-  return 'PL-' + (base + seq - 1) + '-' + datePart + '-' + timePart;
+const CONTADOR_URL = 'https://script.google.com/macros/s/AKfycbxMsksI8MSPsFns9EpGDpSocctbsjV-7W6kcUPAzXpGvnNERbVtm9d_rFHHx_CfQq8ILA/exec';
+
+async function gerarProtocolo() {
+  try {
+    const res = await fetch(CONTADOR_URL);
+    const data = await res.json();
+    return 'PL-' + data.protocolo;
+  } catch(e) {
+    // Fallback local se offline
+    const now = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    return 'PL-OFFLINE-' + now.getFullYear() + pad(now.getMonth()+1) + pad(now.getDate()) + pad(now.getHours()) + pad(now.getMinutes());
+  }
 }
 
 // ── SUBMIT ────────────────────────────────────
@@ -991,7 +988,7 @@ async function submitForm() {
   btn.disabled = true;
   btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="animation:spin 1s linear infinite"><circle cx="8" cy="8" r="6" stroke="rgba(255,255,255,0.3)" stroke-width="2"/><path d="M8 2a6 6 0 0 1 6 6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg> Enviando...`;
 
-  const protocolo = gerarProtocolo();
+  const protocolo = await gerarProtocolo();
   const materiais = getMateriaisSelecionados();
   const pedido = {
     id: Date.now(),
