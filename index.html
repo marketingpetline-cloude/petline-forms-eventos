@@ -965,28 +965,18 @@ function validate() {
 }
 
 // ── PROTOCOLO ────────────────────────────────
-const CONTADOR_URL = 'https://script.google.com/macros/s/AKfycbxUQxODzCAGDC2aKVnbvyWY6hkStprY_4BKteqnORfe3PxRtUDib4o_-15QlAJ14Ae4/exec';
+const CONTADOR_URL = 'https://petline-numerador.marketingpetline.workers.dev';
 
-function gerarProtocolo() {
-  return new Promise((resolve) => {
-    const cbName = 'plcb_' + Date.now();
-    const script = document.createElement('script');
-    const timeout = setTimeout(() => {
-      delete window[cbName];
-      script.remove();
-      const now = new Date();
-      const pad = n => String(n).padStart(2,'0');
-      resolve('PL-OFFLINE-' + now.getFullYear() + pad(now.getMonth()+1) + pad(now.getDate()) + pad(now.getHours()) + pad(now.getMinutes()));
-    }, 5000);
-    window[cbName] = function(data) {
-      clearTimeout(timeout);
-      delete window[cbName];
-      script.remove();
-      resolve('PL-' + data.protocolo);
-    };
-    script.src = CONTADOR_URL + '?callback=' + cbName;
-    document.head.appendChild(script);
-  });
+async function gerarProtocolo() {
+  try {
+    const res = await fetch(CONTADOR_URL);
+    const data = await res.json();
+    return 'PL-' + data.protocolo;
+  } catch(e) {
+    const now = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    return 'PL-OFFLINE-' + now.getFullYear() + pad(now.getMonth()+1) + pad(now.getDate()) + pad(now.getHours()) + pad(now.getMinutes());
+  }
 }
 
 // ── SUBMIT ────────────────────────────────────
